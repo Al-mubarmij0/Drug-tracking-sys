@@ -1,5 +1,4 @@
-/* Fullscreen Responsive Dashboard Layout with Navigation */
-
+/* General Reset */
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +12,8 @@ html, body {
     background: #f4f8fc;
 }
 
-.navbar {
+/* Rename to avoid conflict with Bootstrap's .navbar */
+.custom-navbar {
     background-color: #007BFF;
     color: white;
     padding: 15px 30px;
@@ -25,17 +25,17 @@ html, body {
     z-index: 1000;
 }
 
-.navbar h1 {
+.custom-navbar h1 {
     font-size: 20px;
     margin: 0;
 }
 
-.navbar .user-role {
+.custom-navbar .user-role {
     font-size: 14px;
     font-weight: bold;
 }
 
-.navbar a.logout-btn {
+.custom-navbar .logout-btn {
     background: #dc3545;
     color: white;
     padding: 6px 12px;
@@ -46,10 +46,11 @@ html, body {
     margin-left: 15px;
 }
 
-.navbar a.logout-btn:hover {
+.custom-navbar .logout-btn:hover {
     background: #bd2130;
 }
 
+/* Main Layout */
 .wrapper {
     padding: 30px;
     max-width: 900px;
@@ -69,6 +70,7 @@ h2 {
     margin-bottom: 25px;
 }
 
+/* List Styles */
 ul {
     list-style: none;
     padding: 0;
@@ -99,13 +101,13 @@ a:hover {
     text-decoration: underline;
 }
 
-/* User Dropdown Menu */
-.user-menu {
+/* Rename custom dropdown to avoid Bootstrap conflicts */
+.user-dropdown {
     position: relative;
     display: inline-block;
 }
 
-.user-icon {
+.user-dropdown .user-icon {
     font-size: 20px;
     cursor: pointer;
     background-color: white;
@@ -116,11 +118,11 @@ a:hover {
     transition: background 0.3s;
 }
 
-.user-icon:hover {
+.user-dropdown .user-icon:hover {
     background: #ffffff33;
 }
 
-.dropdown {
+.user-dropdown-menu {
     display: none;
     position: absolute;
     right: 0;
@@ -133,7 +135,7 @@ a:hover {
     overflow: hidden;
 }
 
-.dropdown a {
+.user-dropdown-menu a {
     color: #333;
     padding: 12px 16px;
     text-decoration: none;
@@ -142,6 +144,6 @@ a:hover {
     font-size: 15px;
 }
 
-.dropdown a:hover {
+.user-dropdown-menu a:hover {
     background-color: #f1f1f1;
 }
