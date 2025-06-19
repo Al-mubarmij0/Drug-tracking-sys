@@ -28,7 +28,7 @@ if ($resLogin && $row = $resLogin->fetch_assoc()) {
 
 // Recent Logs (latest 5 entries)
 $recentLogs = [];
-$resRecent = $conn->query("SELECT l.action, l.timestamp, u.name FROM logs l JOIN users u ON l.user_id = u.id ORDER BY l.timestamp DESC LIMIT 5");
+$resRecent = $conn->query("SELECT l.action, l.timestamp, u.username FROM logs l JOIN users u ON l.user_id = u.id ORDER BY l.timestamp DESC LIMIT 5");
 if ($resRecent) {
     while ($row = $resRecent->fetch_assoc()) {
         $recentLogs[] = $row;
@@ -195,7 +195,7 @@ if ($resDistributions && $row = $resDistributions->fetch_assoc()) {
                     <tr>
                         <td><?= $index + 1 ?></td>
                         <td><?= htmlspecialchars($log['action']) ?></td>
-                        <td><?= htmlspecialchars($log['name']) ?></td>
+                        <td><?= htmlspecialchars($log['username']) ?></td>
                         <td><?= date("Y-m-d H:i", strtotime($log['timestamp'])) ?></td>
                     </tr>
                 <?php endforeach; ?>

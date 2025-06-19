@@ -4,8 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-$base_url = $protocol . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']);
-$base_url = rtrim($base_url, '/') . '/';
+$base_url = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/drug-tracking-sys/";
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
@@ -59,17 +58,16 @@ $base_url = rtrim($base_url, '/') . '/';
                 <?php endif; ?>
             </ul>
 
+            <!-- Search Form -->
+            <form class="d-flex ms-3 me-3" method="GET" action="<?= $base_url ?>search.php">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Search..." aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
 
-            
-                <!-- Search Form -->
-                <form class="d-flex ms-3 me-3" method="GET" action="<?= $base_url ?>search.php">
-                    <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Search..." aria-label="Search">
-                        <button class="btn btn-outline-light" type="submit">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                </form>
             <!-- Profile Dropdown -->
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -80,9 +78,23 @@ $base_url = rtrim($base_url, '/') . '/';
                     <li><a class="dropdown-item" href="<?= $base_url ?>profile.php"><i class="bi bi-person me-2"></i>Profile</a></li>
                     <li><a class="dropdown-item" href="<?= $base_url ?>settings.php"><i class="bi bi-gear me-2"></i>Settings</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="<?= $base_url ?>logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="#" onclick="confirmLogout(event)">
+                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
 </nav>
+
+<!-- Logout Confirmation Script -->
+<script>
+function confirmLogout(event) {
+    event.preventDefault();
+    if (confirm("Are you sure you want to logout?")) {
+        window.location.href = "<?= $base_url ?>logout.php";
+    }
+}
+</script>
