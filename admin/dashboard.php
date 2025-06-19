@@ -97,15 +97,18 @@ if ($resDistributions && $row = $resDistributions->fetch_assoc()) {
     </div>
 
     <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card text-bg-primary text-center">
-                <div class="card-body">
-                    <i class="bi bi-person-lines-fill display-6"></i>
-                    <h5>Total Users</h5>
-                    <p class="fs-4"><?= $userCount ?></p>
+       <div class="col-md-3">
+            <a href="../users/list.php" class="text-decoration-none">
+                <div class="card text-bg-primary text-center">
+                    <div class="card-body">
+                        <i class="bi bi-person-lines-fill display-6"></i>
+                        <h5>Total Users</h5>
+                        <p class="fs-4 text-white"><?= $userCount ?></p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
+
 
         <div class="col-md-3">
             <div class="card text-bg-secondary text-center">
