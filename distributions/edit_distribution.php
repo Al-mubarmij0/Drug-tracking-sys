@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../session_check.php';
+require_once __DIR__ . '/../helpers.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
     $id = $_POST['id'];
@@ -12,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
     $stmt->bind_param("iiisi", $stock_id, $recipient_id, $quantity, $date, $id);
 
     if ($stmt->execute()) {
+        log_action($conn, $_SESSION['user_id'], "Updated distribution ID $id: stock ID $stock_id, recipient ID $recipient_id, quantity $quantity");
         header("Location: list.php?success=Distribution+updated+successfully");
     } else {
         header("Location: list.php?error=Failed+to+update+distribution");

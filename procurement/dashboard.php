@@ -1,16 +1,30 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../session_check.php';
+
 $page_title = "Procurement Dashboard";
 
-// (Optional) Sample data placeholders - Replace with real DB queries
-$totalSuppliers = 5;
-$totalProcurements = 20;
-$recentProcurements = [
-    ['ref' => 'PR-001', 'supplier' => 'MediPharm Ltd', 'date' => '2024-06-01'],
-    ['ref' => 'PR-002', 'supplier' => 'Wellcare Pharmacy', 'date' => '2024-06-03'],
-    ['ref' => 'PR-003', 'supplier' => 'Global Meds', 'date' => '2024-06-04'],
-];
+// Fetch total suppliers
+$supplierRes = $conn->query("SELECT COUNT(*) AS total FROM suppliers");
+$totalSuppliers = $supplierRes ? $supplierRes->fetch_assoc()['total'] : 0;
+
+// Fetch total procurements
+$procurementRes = $conn->query("SELECT COUNT(*) AS total FROM procurements");
+$totalProcurements = $procurementRes ? $procurementRes->fetch_assoc()['total'] : 0;
+
+// Fetch recent procurements
+$recentProcurements = [];
+$recentQuery = "SELECT p.reference_no AS ref, s.name AS supplier, p.date_procured AS date
+                FROM procurements p
+                LEFT JOIN suppliers s ON p.supplier_id = s.id
+                ORDER BY p.date_procured DESC
+                LIMIT 5";
+$result = $conn->query($recentQuery);
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $recentProcurements[] = $row;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -23,9 +37,6 @@ $recentProcurements = [
     <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    
-    <!-- Custom CSS
-    <link rel="stylesheet" href="../assets/dashboard.css"> -->
 </head>
 <body>
 
@@ -86,13 +97,17 @@ $recentProcurements = [
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($recentProcurements as $item): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($item['ref']) ?></td>
-                            <td><?= htmlspecialchars($item['supplier']) ?></td>
-                            <td><?= htmlspecialchars($item['date']) ?></td>
-                        </tr>
-                    <?php endforeach; ?>
+                    <?php if (!empty($recentProcurements)): ?>
+                        <?php foreach ($recentProcurements as $item): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($item['ref']) ?></td>
+                                <td><?= htmlspecialchars($item['supplier']) ?></td>
+                                <td><?= htmlspecialchars($item['date']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr><td colspan="3" class="text-center">No recent procurements.</td></tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>

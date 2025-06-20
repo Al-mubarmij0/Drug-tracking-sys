@@ -14,13 +14,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_result($id, $hashed_password, $role);
 
     if ($stmt->fetch() && password_verify($password, $hashed_password)) {
+        // Store session data
         $_SESSION["user_id"] = $id;
         $_SESSION["role"] = $role;
+
+        // Update last login timestamp
+        $stmt->close(); // Close previous statement before running new one
+        $updateStmt = $conn->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
+        $updateStmt->bind_param("i", $id);
+        $updateStmt->execute();
+        $updateStmt->close();
+
+        // Redirect to dashboard
         header("Location: dashboard.php");
         exit;
     } else {
         $error = "Invalid credentials!";
     }
+
+    $stmt->close();
 }
 ?>
 
@@ -29,7 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <title>Login</title>
     <link rel="stylesheet" href="assets/login.css">
-
 </head>
 <body>
 <div class="login-box">
@@ -41,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="password" name="password" required>
         <button type="submit">Login</button>
         <?php if ($error): ?>
-            <p class="error"><?= $error ?></p>
+            <p class="error"><?= htmlspecialchars($error) ?></p>
         <?php endif; ?>
     </form>
 </div>
