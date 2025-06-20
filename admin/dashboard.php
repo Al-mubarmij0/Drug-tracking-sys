@@ -62,6 +62,12 @@ $resDistributions = $conn->query("SELECT COUNT(*) AS total FROM distributions");
 if ($resDistributions && $row = $resDistributions->fetch_assoc()) {
     $distributionCount = $row['total'];
 }
+
+$recipientCount = 0;
+$result = $conn->query("SELECT COUNT(*) as total FROM recipients");
+if ($result) {
+    $recipientCount = $result->fetch_assoc()['total'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -97,29 +103,34 @@ if ($resDistributions && $row = $resDistributions->fetch_assoc()) {
     </div>
 
     <div class="row g-4">
-       <div class="col-md-3">
+
+        <!-- Total Users -->
+        <div class="col-md-3">
             <a href="../users/list.php" class="text-decoration-none">
                 <div class="card text-bg-primary text-center">
                     <div class="card-body">
                         <i class="bi bi-person-lines-fill display-6"></i>
                         <h5>Total Users</h5>
-                        <p class="fs-4 text-white"><?= $userCount ?></p>
+                        <p class="fs-4"><?= $userCount ?></p>
                     </div>
                 </div>
             </a>
         </div>
 
-
+        <!-- Total Logs -->
         <div class="col-md-3">
-            <div class="card text-bg-secondary text-center">
-                <div class="card-body">
-                    <i class="bi bi-clock-history display-6"></i>
-                    <h5>Total Logs</h5>
-                    <p class="fs-4"><?= $logCount ?></p>
+            <a href="../logs/view_logs.php" class="text-decoration-none">
+                <div class="card text-bg-secondary text-center">
+                    <div class="card-body">
+                        <i class="bi bi-clock-history display-6"></i>
+                        <h5>Total Logs</h5>
+                        <p class="fs-4"><?= $logCount ?></p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
+        <!-- Last Login (non-clickable) -->
         <div class="col-md-3">
             <div class="card text-bg-success text-center">
                 <div class="card-body">
@@ -130,56 +141,86 @@ if ($resDistributions && $row = $resDistributions->fetch_assoc()) {
             </div>
         </div>
 
+        <!-- Recent Logs -->
         <div class="col-md-3">
-            <div class="card text-bg-warning text-center">
-                <div class="card-body">
-                    <i class="bi bi-terminal-split display-6"></i>
-                    <h5>Recent Logs</h5>
-                    <p class="fs-6">See last 5 entries below</p>
+            <a href="../logs/view_logs.php" class="text-decoration-none">
+                <div class="card text-bg-warning text-center">
+                    <div class="card-body">
+                        <i class="bi bi-terminal-split display-6"></i>
+                        <h5>Recent Logs</h5>
+                        <p class="fs-6">See last 5 entries below</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
+        <!-- Total Stock -->
         <div class="col-md-3">
-            <div class="card text-bg-info text-center">
-                <div class="card-body">
-                    <i class="bi bi-boxes display-6"></i>
-                    <h5>Total Stock Items</h5>
-                    <p class="fs-4"><?= $stockCount ?></p>
+            <a href="../stock/list.php" class="text-decoration-none">
+                <div class="card text-bg-info text-center">
+                    <div class="card-body">
+                        <i class="bi bi-boxes display-6"></i>
+                        <h5>Total Stock Items</h5>
+                        <p class="fs-4"><?= $stockCount ?></p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
+        <!-- Total Suppliers -->
         <div class="col-md-3">
-            <div class="card text-bg-dark text-center">
-                <div class="card-body">
-                    <i class="bi bi-truck display-6"></i>
-                    <h5>Total Suppliers</h5>
-                    <p class="fs-4"><?= $supplierCount ?></p>
+            <a href="../suppliers/list.php" class="text-decoration-none">
+                <div class="card text-bg-dark text-center">
+                    <div class="card-body">
+                        <i class="bi bi-truck display-6"></i>
+                        <h5>Total Suppliers</h5>
+                        <p class="fs-4"><?= $supplierCount ?></p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
+        <!-- Total Procurements -->
         <div class="col-md-3">
-            <div class="card text-bg-danger text-center">
-                <div class="card-body">
-                    <i class="bi bi-cart-check display-6"></i>
-                    <h5>Total Procurements</h5>
-                    <p class="fs-4"><?= $procurementCount ?></p>
+            <a href="../procurements/list.php" class="text-decoration-none">
+                <div class="card text-bg-danger text-center">
+                    <div class="card-body">
+                        <i class="bi bi-cart-check display-6"></i>
+                        <h5>Total Procurements</h5>
+                        <p class="fs-4"><?= $procurementCount ?></p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
+        <!-- Total Distributions -->
         <div class="col-md-3">
-            <div class="card text-bg-light text-center">
-                <div class="card-body">
-                    <i class="bi bi-send display-6"></i>
-                    <h5>Total Distributions</h5>
-                    <p class="fs-4"><?= $distributionCount ?></p>
+            <a href="../distributions/list.php" class="text-decoration-none">
+                <div class="card text-bg-light text-center">
+                    <div class="card-body">
+                        <i class="bi bi-send display-6"></i>
+                        <h5>Total Distributions</h5>
+                        <p class="fs-4"><?= $distributionCount ?></p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
+
+        <!-- Total Recipients -->
+        <div class="col-md-3">
+            <a href="../recipients/list.php" class="text-decoration-none">
+                <div class="card text-bg-light text-center">
+                    <div class="card-body">
+                        <i class="bi bi-people-fill display-6"></i>
+                        <h5>Total Recipients</h5>
+                        <p class="fs-4"><?= $recipientCount ?></p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
     </div>
+
 
     <!-- Recent Logs Table -->
     <div class="mt-4">

@@ -4,9 +4,19 @@ require_once __DIR__ . '/../session_check.php';
 
 $page_title = "Manage Users";
 
-// Fetch users
+// Pagination setup
+$perPage = 10;
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
+$start = ($page - 1) * $perPage;
+
+// Get total users for pagination
+$totalQuery = $conn->query("SELECT COUNT(*) as total FROM users");
+$totalUsers = $totalQuery->fetch_assoc()['total'];
+$totalPages = ceil($totalUsers / $perPage);
+
+// Fetch paginated users
 $users = [];
-$result = $conn->query("SELECT * FROM users ORDER BY created_at DESC");
+$result = $conn->query("SELECT * FROM users ORDER BY created_at DESC LIMIT $start, $perPage");
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $users[] = $row;
@@ -34,14 +44,23 @@ if ($result) {
         </button>
     </div>
 
+    <div class="mb-3">
+        <a href="../dashboard.php" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
+        </a>
+    </div>
+
     <?php if (isset($_GET['success'])): ?>
         <div class="alert alert-success"><?= htmlspecialchars($_GET['success']) ?></div>
-    <?php endif; ?>
-    <?php if (isset($_GET['error'])): ?>
+    <?php elseif (isset($_GET['error'])): ?>
         <div class="alert alert-danger"><?= htmlspecialchars($_GET['error']) ?></div>
     <?php endif; ?>
 
-    <table class="table table-bordered table-striped align-middle">
+    <!-- Search -->
+    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search users...">
+
+    <!-- User Table -->
+    <table class="table table-bordered table-striped align-middle" id="userTable">
         <thead class="table-dark">
             <tr>
                 <th>#</th>
@@ -54,7 +73,7 @@ if ($result) {
         <tbody>
             <?php foreach ($users as $index => $user): ?>
                 <tr>
-                    <td><?= $index + 1 ?></td>
+                    <td><?= $start + $index + 1 ?></td>
                     <td><?= htmlspecialchars($user['username']) ?></td>
                     <td><?= ucfirst($user['role']) ?></td>
                     <td><?= date('Y-m-d H:i', strtotime($user['created_at'])) ?></td>
@@ -70,14 +89,64 @@ if ($result) {
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <!-- Edit User Modals (Rendered separately after table) -->
+    <?php foreach ($users as $user): ?>
+        <div class="modal fade" id="editUserModal<?= $user['id'] ?>" tabindex="-1">
+            <div class="modal-dialog">
+                <form action="edit_user.php" method="POST" class="modal-content">
+                    <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label>Username</label>
+                            <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($user['username']) ?>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>New Password (leave blank to keep current)</label>
+                            <input type="password" name="password" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label>Role</label>
+                            <select name="role" class="form-select" required>
+                                <option value="admin" <?= $user['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
+                                <option value="procurement" <?= $user['role'] === 'procurement' ? 'selected' : '' ?>>Procurement</option>
+                                <option value="pharmacist" <?= $user['role'] === 'pharmacist' ? 'selected' : '' ?>>Pharmacist</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" name="update" class="btn btn-success">Update</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <?php endforeach; ?>
+
+    <!-- Pagination -->
+    <?php if ($totalPages > 1): ?>
+        <nav>
+            <ul class="pagination justify-content-center">
+                <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+                    <li class="page-item <?= $p == $page ? 'active' : '' ?>">
+                        <a class="page-link" href="?page=<?= $p ?>"><?= $p ?></a>
+                    </li>
+                <?php endfor; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
 </div>
 
 <!-- Add User Modal -->
-<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+<div class="modal fade" id="addUserModal" tabindex="-1">
     <div class="modal-dialog">
         <form action="add_user.php" method="POST" class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                <h5 class="modal-title">Add New User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -106,43 +175,16 @@ if ($result) {
     </div>
 </div>
 
-<!-- Edit User Modals -->
-<?php foreach ($users as $user): ?>
-<div class="modal fade" id="editUserModal<?= $user['id'] ?>" tabindex="-1" aria-labelledby="editUserModalLabel<?= $user['id'] ?>" aria-hidden="true">
-    <div class="modal-dialog">
-        <form action="edit_user.php" method="POST" class="modal-content">
-            <input type="hidden" name="id" value="<?= $user['id'] ?>">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editUserModalLabel<?= $user['id'] ?>">Edit User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label>Username</label>
-                    <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($user['username']) ?>" required>
-                </div>
-                <div class="mb-3">
-                    <label>New Password (leave blank to keep current)</label>
-                    <input type="password" name="password" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label>Role</label>
-                    <select name="role" class="form-select" required>
-                        <option value="admin" <?= $user['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
-                        <option value="procurement" <?= $user['role'] === 'procurement' ? 'selected' : '' ?>>Procurement</option>
-                        <option value="pharmacist" <?= $user['role'] === 'pharmacist' ? 'selected' : '' ?>>Pharmacist</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" name="update" class="btn btn-success">Update</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </form>
-    </div>
-</div>
-<?php endforeach; ?>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById("searchInput").addEventListener("keyup", function () {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#userTable tbody tr");
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+});
+</script>
 </body>
 </html>

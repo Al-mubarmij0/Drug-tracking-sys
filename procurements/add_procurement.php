@@ -1,0 +1,23 @@
+<?php
+require_once __DIR__ . '/../config.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add'])) {
+    $supplier_id = $_POST['supplier_id'];
+    $date_procured = $_POST['date_procured'];
+    $reference_no = trim($_POST['reference_no']);
+    $notes = trim($_POST['notes']);
+
+    $stmt = $conn->prepare("INSERT INTO procurements (supplier_id, date_procured, reference_no, notes) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("isss", $supplier_id, $date_procured, $reference_no, $notes);
+
+    if ($stmt->execute()) {
+        header("Location: list.php?success=Procurement+added+successfully");
+    } else {
+        header("Location: list.php?error=Failed+to+add+procurement");
+    }
+
+    $stmt->close();
+} else {
+    header("Location: list.php");
+    exit;
+}
