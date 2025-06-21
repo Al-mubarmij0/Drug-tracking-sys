@@ -37,9 +37,12 @@ if ($res) {
 
 <div class="container mt-5">
     <h3><?= $page_title ?></h3>
-    <div class="mb-3">
+    <div class="mb-3 d-flex justify-content-between">
         <a href="../pharmacist/dashboard.php" class="btn btn-secondary">
             <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
+        </a>
+        <a href="download_distribution_report.php" class="btn btn-success">
+            <i class="bi bi-download"></i> Download CSV
         </a>
     </div>
 
